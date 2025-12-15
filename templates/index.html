@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="mb-0">Web Password Manager</h4>
+  <form class="d-flex" method="get" action="{{ url_for('index') }}">
+    <input class="form-control form-control-sm me-2" type="text" name="q"
+           placeholder="Search website..." value="{{ query }}">
+    <button class="btn btn-sm btn-outline-info me-1" type="submit">Search</button>
+    <a href="{{ url_for('index') }}" class="btn btn-sm btn-outline-secondary">Reset</a>
+  </form>
+</div>
+
+<form method="post" action="{{ url_for('index') }}" class="mb-3">
+  <div class="row g-2">
+    <div class="col-md-6">
+      <label class="form-label mb-1">Website *</label>
+      <input type="text" name="website" class="form-control form-control-sm" required>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label mb-1">Username *</label>
+      <input type="text" name="username" class="form-control form-control-sm" required>
+    </div>
+  </div>
+  <div class="row g-2 mt-1">
+    <div class="col-md-6">
+      <label class="form-label mb-1">Password *</label>
+      <input type="text" name="password" class="form-control form-control-sm" required>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label mb-1">Notes</label>
+      <textarea name="notes" class="form-control form-control-sm" rows="1"></textarea>
+    </div>
+  </div>
+  <div class="d-flex align-items-center gap-2 mt-3">
+    <button type="submit" class="btn btn-success btn-sm">Save</button>
+    <a href="{{ url_for('export_csv') }}" class="btn btn-secondary btn-sm">Export CSV</a>
+  </div>
+</form>
+
+{% if passwords %}
+  <div class="table-responsive">
+    <table class="table table-sm table-striped align-middle text-light" data-bs-theme="dark">
+      <thead>
+        <tr>
+          <th scope="col">ID</th>
+          <th scope="col">Website</th>
+          <th scope="col">Username</th>
+          <th scope="col">Password</th>
+          <th scope="col">Notes</th>
+          <th scope="col" class="text-end">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for pw in passwords %}
+        <tr>
+          <td>{{ pw.id }}</td>
+          <td>{{ pw.website }}</td>
+          <td>{{ pw.username }}</td>
+          <td>{{ pw.password }}</td>
+          <td>{{ pw.notes }}</td>
+          <td class="text-end">
+            <form method="post" action="{{ url_for('delete_password', pw_id=pw.id) }}" class="d-inline">
+              <button type="submit" class="btn btn-sm btn-danger"
+                      onclick="return confirm('Delete this record?');">
+                Delete
+              </button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <p class="text-muted">No passwords saved yet.</p>
+{% endif %}
+{% endblock %}
+
